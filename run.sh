@@ -5,19 +5,27 @@
 #   $1: Execution mode. Valid values: deploy, delete, preview.
 #
 # Usage examples:
+#   ./run.sh build (for s3 bucket - must be done first)
 #   ./run.sh create 
 #   ./run.sh update
-#   ./run.sh delete
+#   ./run.sh delete (s3 bucket must be emptied and deleted first)
 #
 
 # Validate parameters
-if [[ $1 != "create" && $1 != "delete" && $1 != "update" ]]; then
+if [[ $1 != "build" && != "create" && $1 != "delete" && $1 != "update" ]]; then
     echo "ERROR: Incorrect execution mode. Valid values: deploy, delete, update." >&2
     exit 1
 fi
 
-aws cloudformation create-stack --stack-name s3 --template-body file://s3.yml --region=us-east-1
+if [ $1 == "build" ]
+then
+    aws cloudformation create-stack \
+        --stack-name s3 \
+        --template-body file://s3.yml \
+        --region=us-east-1
+fi
 
+# then the index.html file must be manually uploaded to the s3 bucket on the AWS GUI.
 
 # Execute CloudFormation CLI
 if [ $1 == "create" ]
